@@ -2,6 +2,8 @@
 
 let
 
+  # This is rather repetitive, could be automated in the future
+  # Some nix people will prefer this way though, makes it clearer
   scope = self: with self; {
 
     # The futhark compiler
@@ -10,12 +12,13 @@ let
     # A convenience function to extract .fut files from a source
     extractFut = callPackage ./extractFut.nix {};
 
+    # Implements propagation of dependencies
     futharkSrc = callPackage ./futharkSrc.nix {};
 
     # A function to build a package
     buildFuthark = callPackage ./buildFuthark.nix {};
 
-    # Libraries, all just a single .fut file in this case
+    # Packages
     distance = callPackage ./distance.nix {};
     least_squares = callPackage ./least_squares.nix {};
     price_european_calls = callPackage ./price_european_calls.nix {};

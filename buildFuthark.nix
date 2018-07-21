@@ -1,4 +1,4 @@
-{ stdenv, lib, buildEnv, futhark, extractFut }:
+{ stdenv, lib, buildEnv, futhark, futharkSrc }:
 
 { name
 , src
@@ -9,9 +9,12 @@
 
 let
 
-  path = buildEnv {
-    name = "futhark-path-${name}";
-    paths = futharkDeps ++ lib.optional (! lib.inNixShell) src;
+  path = futharkSrc {
+    inherit name src futharkDeps;
+    # In a nix-shell we don't want the installpath to contain an unchangeable
+    # source, but use the one in the current directory instead, only deps should
+    # be from the installpath in that case
+    depsOnly = lib.inNixShell;
   };
 
 in
@@ -36,7 +39,9 @@ stdenv.mkDerivation ({
 
   shellHook = ''
     installpath() {
+      # Prevents garbage collection, and allows for troubleless removal with rm
       nix-store -v --add-root path --indirect -r ${path}
+      # Bring the top-level files/dirs into the current directory
       ln -fs path/* .
     }
     uninstallpath() {
@@ -48,6 +53,7 @@ stdenv.mkDerivation ({
   '';
 
   passthru = {
+    # Allows building just the path via `nix-build -A path`
     inherit path;
   } // passthru;
 

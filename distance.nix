@@ -1,5 +1,5 @@
-{ extractFut, fetchFromGitHub }:
-extractFut {
+{ futharkSrc, fetchFromGitHub }:
+futharkSrc {
   name = "distance";
   src = fetchFromGitHub {
     owner = "diku-dk";

@@ -1,6 +1,7 @@
 { stdenv, runCommand, rsync }:
 { name, src, root ? "." }:
 
+# Filters out all non-.fut files and prepares it for buildEnv'ing
 stdenv.mkDerivation {
   inherit name src root;
   buildInputs = [ rsync ];
